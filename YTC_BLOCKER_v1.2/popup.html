@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>YouTube SpamComment Blocker_KR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 팝업 배경: 부드러운 회색-파랑 그라데이션으로 변경 */
+        body {
+            font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+            width: 320px;
+            padding: 20px;
+            background: linear-gradient(135deg, #e0e7ef 0%, #a3b8d8 100%);
+            color: #333;
+            min-height: 280px;
+        }
+
+        /* 다크모드 스타일 추가 */
+        body.dark {
+            background: linear-gradient(135deg, #232946 0%, #121629 100%);
+            color: #e9ecef;
+        }
+        body.dark .container {
+            background: rgba(34, 40, 70, 0.95);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        body.dark .header h2 {
+            color: #a3b8d8;
+        }
+        body.dark .subtitle {
+            color: #b0b8c1;
+        }
+        body.dark .toggle-container {
+            background: #232946;
+            border: 1px solid #232946;
+        }
+        body.dark .toggle-label {
+            color: #e9ecef;
+        }
+        body.dark .slider {
+            background-color: #393e5c;
+        }
+        body.dark .status-text.enabled {
+            background: linear-gradient(135deg, #2e7d32, #388e3c);
+            color: #e9ecef;
+            border: 1px solid #388e3c;
+        }
+        body.dark .status-text.disabled {
+            background: linear-gradient(135deg, #b71c1c, #c62828);
+            color: #e9ecef;
+            border: 1px solid #c62828;
+        }
+        body.dark .stats-container {
+            background: #232946;
+            border: 1px solid #393e5c;
+        }
+        body.dark .stats-title {
+            color: #a3b8d8;
+        }
+        body.dark .stats-number {
+            color: #e9ecef;
+        }
+        body.dark .stats-label {
+            color: #a3b8d8;
+        }
+        body.dark .action-link {
+            color: #a3b8d8;
+            background: rgba(163, 184, 216, 0.1);
+        }
+        body.dark .action-link:hover {
+            background: rgba(163, 184, 216, 0.2);
+        }
+        body.dark .footer {
+            color: #b0b8c1;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .toggle-label {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 32px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 34px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        input:checked + .slider {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(28px);
+        }
+
+        .status-text {
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .enabled {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .disabled {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .stats-container {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #bbdefb;
+        }
+
+        .stats-title {
+            font-size: 12px;
+            color: #1976d2;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stats-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1565c0;
+            text-align: center;
+        }
+
+        .stats-label {
+            font-size: 11px;
+            color: #42a5f5;
+            text-align: center;
+            margin-top: 2px;
+        }
+
+        .action-links {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .action-link {
+            font-size: 12px;
+            color: #007bff;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: rgba(0, 123, 255, 0.1);
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .action-link:hover {
+            background: rgba(0, 123, 255, 0.2);
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 10px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>🛡️ SpamComment Blocker</h2>
+            <div class="subtitle">유튜브 스팸 댓글 차단기</div>
+        </div>
+
+        <div class="toggle-container">
+            <span class="toggle-label">차단 기능</span>
+            <label class="switch">
+                <input type="checkbox" id="toggleEnabled" />
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div id="statusText" class="status-text">상태 불러오는 중...</div>
+
+        <div class="stats-container">
+            <div class="stats-title">📊 차단 통계</div>
+            <div id="blockedCount" class="stats-number">0</div>
+            <div class="stats-label">차단된 댓글</div>
+        </div>
+
+        <div class="action-links">
+            <a href="options.html" target="_blank" class="action-link">🔧 설정</a>
+            <a href="#" id="resetCount" class="action-link">🔄 초기화</a>
+        </div>
+
+        <div class="footer">
+            버전 1.2 | Made daengsik
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

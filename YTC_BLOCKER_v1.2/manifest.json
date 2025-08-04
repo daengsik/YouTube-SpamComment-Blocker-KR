@@ -1,0 +1,22 @@
+{
+    "manifest_version" : 3,
+    "name" : "YouTube_SpamComment_Blocker_KR",
+    "version" : "1.2",
+    "description" : "유튜브 스팸 댓글 차단기",
+    "permissions" : ["storage", "scripting", "activeTab", "tabs"],
+    "host_permissions" : ["https://www.youtube.com/*"],
+    "background" : {
+        "service_worker" : "background.js"
+    },
+    "action" : {
+        "default_popup" : "popup.html"
+    },
+    "options_page" : "options.html",
+    "content_scripts" : [
+        {
+            "matches" : ["https://www.youtube.com/*"],
+            "js" : ["constants.js", "content.js"],
+            "run_at" : "document_idle"
+        }
+    ]
+}
